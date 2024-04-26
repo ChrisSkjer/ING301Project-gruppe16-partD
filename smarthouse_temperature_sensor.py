@@ -33,7 +33,12 @@ class Sensor:
 
         # TODO: START
         # send temperature to the cloud service with regular intervals
+        url = f"http://127.0.0.1:8000/smarthouse/sensor/{self.did}/current"
 
+        response = requests.get(url)
+
+        print(response.json())
+        
         logging.info(f"Client {self.did} finishing")
 
         # TODO: END

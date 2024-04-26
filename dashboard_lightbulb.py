@@ -10,14 +10,17 @@ import common
 def lightbulb_cmd(state, did):
 
     new_state = state.get()
-
     logging.info(f"Dashboard: {new_state}")
 
-    # TODO: START
-    # send HTTP request with new actuator state to cloud service
+    
+    url = f"http://127.0.0.1:8000/smarthouse/actuator/{did}"
 
+    payload = { "state": new_state }
 
-    # TODO: END
+    response = requests.put(url, json=payload)
+
+    print(response.json())
+
 
 
 def init_lightbulb(container, did):
@@ -28,7 +31,7 @@ def init_lightbulb(container, did):
     # variable used to keep track of lightbulb state
     lightbulb_state_var = tk.StringVar(None, 'Off')
 
-    on_radio = ttk.Radiobutton(lb_lf, text='On', value='On',
+    on_radio = ttk.Radiobutton(lb_lf, text='On', value= "on",
                                variable=lightbulb_state_var,
                                command=lambda: lightbulb_cmd(lightbulb_state_var, did))
 
