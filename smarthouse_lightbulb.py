@@ -30,9 +30,21 @@ class Actuator:
         # TODO: START
         # send request to cloud service with regular intervals and
         # set state of actuator according to the received response
-
+        
         logging.info(f"Client {self.did} finishing")
+        intervall = 4
+        i = 0
+        while i > 8:
+            url = "http://127.0.0.1:8000/smarthouse/actuator/{self.did}"
 
+            payload = { "state": self.state }   #må passe på å sende rett type inn her on = "on" og off = "off"
+
+            response = requests.put(url, json=payload)
+
+            print(response.json())
+
+            time.sleep(intervall)
+            i += 1
         # TODO: END
 
     def run(self):

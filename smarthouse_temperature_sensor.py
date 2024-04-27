@@ -33,14 +33,23 @@ class Sensor:
 
         # TODO: START
         # send temperature to the cloud service with regular intervals
+        i = 0
+        intervall = 2
         url = f"http://127.0.0.1:8000/smarthouse/sensor/{self.did}/current"
 
-        response = requests.get(url)
+        while True:
+            payload = {
+                    "timestamp": self.measurement.timestamp,
+                    "value": self.measurement.value,
+                    "unit": self.measurement.unit                             #denne må oppdateres med de simumerte målingene
+}
+            logging.info(f"Sensor Client {self.did}: {self.measurement.value}")
+            response = requests.post(url, json=payload)
 
-        print(response.json())
-        
-        logging.info(f"Client {self.did} finishing")
+            print(response.json())
 
+            time.sleep(intervall)
+            
         # TODO: END
 
     def run(self):
@@ -50,7 +59,12 @@ class Sensor:
 
         # create and start thread simulating physical temperature sensor
 
-        # create and start thread sending temperature to the cloud service
+        simulering = threading.Thread(target=self.simulator)
 
+        simulering.start()
+
+        # create and start thread sending temperature to the cloud service
+        klient = threading.Thread(target=self.client)
+        klient.start()
         # TODO: END
 
