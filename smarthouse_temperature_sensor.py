@@ -13,12 +13,13 @@ class Sensor:
     def __init__(self, did):
         self.did = did
         self.measurement = SensorMeasurement('0.0')
+        self.stop_event = threading.Event()
 
     def simulator(self):
 
         logging.info(f"Sensor {self.did} starting")
 
-        while True:
+        while not self.stop_event.is_set():
 
             temp = round(math.sin(time.time() / 10) * common.TEMP_RANGE, 1)
 
@@ -33,11 +34,11 @@ class Sensor:
 
         # TODO: START
         # send temperature to the cloud service with regular intervals
-        i = 0
-        intervall = 2
+        
+        intervall = 6
         url = f"http://127.0.0.1:8000/smarthouse/sensor/{self.did}/current"
 
-        while True:
+        while not self.stop_event.is_set():
             payload = {
                     "timestamp": self.measurement.timestamp,
                     "value": self.measurement.value,
@@ -67,4 +68,8 @@ class Sensor:
         klient = threading.Thread(target=self.client)
         klient.start()
         # TODO: END
+
+    def stop(self):
+        self.stop_event.set()
+
 

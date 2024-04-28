@@ -1,5 +1,5 @@
 import logging
-
+import time
 from smarthouse_temperature_sensor import Sensor
 from smarthouse_lightbulb import Actuator
 
@@ -15,4 +15,19 @@ sensor.run()
 
 actuator = Actuator(common.LIGHTBULB_DID)
 actuator.run()
+
+
+try:
+    while True:
+        time.sleep(1)  # Du kan sette en kort pause for å redusere CPU-bruk.
+except KeyboardInterrupt:
+    print("\nAvslutter etter brukerforespørsel (Ctrl+C)...")
+finally:
+    sensor.stop() 
+    actuator.stop() # Stopper trådene på en kontrollert måte
+    print("Venter på at trådene avslutter...")
+    print("Program avsluttet.")
+
+
+
 

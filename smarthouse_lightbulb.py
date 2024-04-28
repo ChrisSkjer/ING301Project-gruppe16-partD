@@ -12,12 +12,13 @@ class Actuator:
     def __init__(self, did):
         self.did = did
         self.state = ActuatorState('False')
+        self.stop_event = threading.Event()
 
     def simulator(self):
 
         logging.info(f"Actuator {self.did} starting")
 
-        while True:
+        while not self.stop_event.is_set():
 
             logging.info(f"Actuator {self.did}: {self.state.state}")
 
@@ -32,29 +33,28 @@ class Actuator:
         # set state of actuator according to the received response
         
         logging.info(f"Client {self.did} finishing")
-        intervall = 4
+        intervall = 5
         
-        while True:
+        while not self.stop_event.is_set():
             url = f"http://127.0.0.1:8000/smarthouse/actuator/{self.did}/current"
 
             response = requests.get(url)
-            state = response["state"]
+            state = response.json()["state"]
 
             logging.info(f"Client {self.did} state: {state}")
 
-            if response["state"] == "running":
-                ActuatorState('True')
-            elif response["state"] == "off":
-                ActuatorState('False')
+            if state == "running":
+                self.state = ActuatorState('True')
+            elif state == "off":
+                self.state = ActuatorState('False')
             print(response.json())
-        
+
+            time.sleep(intervall)
         
         
 
     def run(self):
     
-
-        pass
         # TODO: START
 
         # start thread simulating physical light bulb
@@ -64,5 +64,9 @@ class Actuator:
         state = threading.Thread(target=self.client)
         state.start()
         # TODO: END
+    
+    def stop(self):
+        self.stop_event.set()
+
 
 
