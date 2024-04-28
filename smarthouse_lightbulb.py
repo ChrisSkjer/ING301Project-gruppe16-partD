@@ -33,29 +33,36 @@ class Actuator:
         
         logging.info(f"Client {self.did} finishing")
         intervall = 4
-        i = 0
-        while i > 8:
-            url = "http://127.0.0.1:8000/smarthouse/actuator/{self.did}"
+        
+        while True:
+            url = f"http://127.0.0.1:8000/smarthouse/actuator/{self.did}/current"
 
-            payload = { "state": self.state }   #må passe på å sende rett type inn her on = "on" og off = "off"
+            response = requests.get(url)
+            state = response["state"]
 
-            response = requests.put(url, json=payload)
+            logging.info(f"Client {self.did} state: {state}")
 
+            if response["state"] == "running":
+                ActuatorState('True')
+            elif response["state"] == "off":
+                ActuatorState('False')
             print(response.json())
-
-            time.sleep(intervall)
-            i += 1
-        # TODO: END
+        
+        
+        
 
     def run(self):
+    
 
         pass
         # TODO: START
 
         # start thread simulating physical light bulb
-
+        sim = threading.Thread(target=self.simulator)
+        sim.start()
         # start thread receiving state from the cloud
-
+        state = threading.Thread(target=self.client)
+        state.start()
         # TODO: END
 
 
