@@ -42,7 +42,7 @@ class Sensor:
             payload = {
                     "timestamp": self.measurement.timestamp,
                     "value": self.measurement.value,
-                    "unit": self.measurement.unit                             #denne må oppdateres med de simumerte målingene
+                    "unit": self.measurement.unit                             
 }
             logging.info(f"Sensor Client {self.did}: {self.measurement.value}")
             response = requests.post(url, json=payload)
